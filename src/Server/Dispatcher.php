@@ -31,6 +31,16 @@ class Dispatcher
      */
     protected $args;
 
+    /**
+     * @var
+     */
+    protected $afterFindOut;
+
+    /**
+     * @var
+     */
+    protected $afterInstanced;
+
 
     public function __construct($data)
     {
@@ -81,7 +91,11 @@ class Dispatcher
     public function run()
     {
         $called = $this->getCall();
+        if ($this->afterFindOut) {
+            $called = ($this->afterFindOut)($called);
+        }
         list($className, $methodName) = $called;
+
         if (!$className || !class_exists($className)) {
             throw new Exception(sprintf('class %s not exist', $className));
         }
@@ -89,8 +103,22 @@ class Dispatcher
         if (!method_exists($instance, $methodName)) {
             throw new Exception(sprintf('method %s::%s not exist', $className, $methodName));
         }
+        if ($this->afterInstanced) {
+            ($this->afterInstanced)($instance);
+        }
         return call_user_func_array([$instance, $methodName], $this->getArg());
     }
+
+    /**
+     * Author:Robert
+     *
+     * @param $method
+     */
+    public function afterFindOut($method): void
+    {
+        $this->afterFindOut = $method;
+    }
+
 
     /**
      * Author:Robert
@@ -104,5 +132,15 @@ class Dispatcher
             spl_autoload_register($loader);
             $rpcLoaderInit = true;
         }
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @param $method
+     */
+    public function afterInstanced($method): void
+    {
+        $this->afterInstanced = $method;
     }
 }

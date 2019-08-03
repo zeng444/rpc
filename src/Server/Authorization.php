@@ -65,6 +65,9 @@ class Authorization
         if (!function_exists($signType)) {
             throw new Exception('sign type '.$signType.' not exits');
         }
+        if(!isset($data['call']) || !isset($data['service'])){
+            throw new Exception('params not exits');
+        }
         $signature = $signType(sprintf('appId=%s&algorithm=%s&call=%s&secret=%s&service=%s&timestamp=%s', $this->appId, $signType, $data['call'], $this->appSecret, $data['service'], $data['timestamp']));
         return $signature === $data['signature'];
     }

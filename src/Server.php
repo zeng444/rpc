@@ -31,8 +31,6 @@ class Server
 
     public $dispatch;
 
-    public $dispatchLoader;
-
 
     /**
      * Server constructor.
@@ -86,9 +84,29 @@ class Server
      *
      * @param $loader
      */
-    public function registerLoader($loader)
+    public function registerLoader($loader): void
     {
         $this->dispatch->registerAutoLoad($loader);
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @param $method
+     */
+    public function afterInstancedService($method): void
+    {
+        $this->dispatch->afterInstanced($method);
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @param $method
+     */
+    public function afterFindOutService($method): void
+    {
+        $this->dispatch->afterFindOut($method);
     }
 
     /**

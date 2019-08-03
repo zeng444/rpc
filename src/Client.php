@@ -71,11 +71,15 @@ class Client
      */
     public function __call(string $methodName, array $args)
     {
-        $config = self::$config[$this->serviceName];
+        $config = self::$config[$this->serviceName] ?? '';
         if (!$config) {
             throw new Exception('Config for `'.$this->serviceName.'` not found.');
         }
-        return $this->parse((self::getClient($config['url']))->remoteCall($this->make($methodName, $args, $config['id'], $config['secret'], $config['signType'])));
+        if (!isset($config['id']) || !isset($config['secret'])) {
+            throw new Exception('Config error');
+        }
+        return $this->parse((self::getClient($config['url']))->remoteCall($this->make($methodName, $args, $config['id'], $config['secret'], $config['signType'] ?? 'sha1')));
+
     }
 
     /**

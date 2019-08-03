@@ -6,7 +6,7 @@ use Janfish\Rpc\Client\ClientInterface;
 use Janfish\Rpc\Client\Exception;
 
 /**
- * Janfish RPC client by
+ * Janfish RPC client
  * Author:Robert
  *
  * Class Client
