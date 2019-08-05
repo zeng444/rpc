@@ -22,6 +22,7 @@ class Server
     protected $appId;
 
     protected $res;
+    protected $config;
 
     /**
      *
@@ -31,14 +32,18 @@ class Server
 
     public $dispatch;
 
+    const RPC_EOL = "\r\n";
+
 
     /**
      * Server constructor.
      * @param array $options
+     * @param array $res
      * @throws Exception
      */
-    public function __construct(array $options)
+    public function __construct(array $options, array $res = [])
     {
+        $this->config = $options;
         if (isset($options['id'])) {
             $this->appId = $options['id'];
         }
@@ -48,8 +53,7 @@ class Server
         if (!$this->appId || !$this->appSecret) {
             throw new Exception('rpc client params error');
         }
-        $this->res = $this->getRequestRawBody();
-        $this->checkSign($options);
+        $this->res = $res ?: self::getHttpRequestRawBody();
         $this->dispatch = new Dispatcher($this->res);
     }
 
@@ -59,7 +63,7 @@ class Server
      *
      * @return array|false|string
      */
-    public function getRequestRawBody(): array
+    public static function getHttpRequestRawBody(): array
     {
         $raw = file_get_contents("php://input");
         $data = json_decode($raw, true);
@@ -74,9 +78,7 @@ class Server
      */
     public function end($data): string
     {
-        header('Content-Type: application/json; charset=utf-8');
-        echo @json_encode($data);
-        exit;
+        return @json_encode($data).self::RPC_EOL;
     }
 
     /**
@@ -112,38 +114,40 @@ class Server
     /**
      * Author:Robert
      *
-     * @param array $config
+     * @return bool
      * @throws Exception
      */
-    public function checkSign(array $config): void
+    public function checkSign(): bool
     {
-        $authorization = new Authorization($config);
-        if ($authorization->check($this->res) === false) {
-            $this->end([
-                'data' => '',
-                'ok' => false,
-                'trace' => '',
-                'error' => 'Forbidden ',
-            ]);
-        }
+        $authorization = new Authorization($this->config);
+        return $authorization->check($this->res);
     }
 
 
     /**
      * Author:Robert
      *
+     * @return string
      */
     public function handle()
     {
         try {
-            $this->end([
+            if ($this->checkSign() === false) {
+                return $this->end([
+                    'data' => '',
+                    'ok' => false,
+                    'trace' => '',
+                    'error' => 'Forbidden ',
+                ]);
+            }
+            return $this->end([
                 'data' => $this->dispatch->run(),
                 'ok' => true,
                 'trace' => '',
                 'error' => '',
             ]);
         } catch (Exception $e) {
-            $this->end([
+            return $this->end([
                 'data' => '',
                 'ok' => false,
                 'trace' => $e->getTraceAsString(),

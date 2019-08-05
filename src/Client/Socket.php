@@ -1,9 +1,6 @@
 <?php
 
-namespace Application\Core\Components\Rpc;
-
-use Janfish\Rpc\Client\ClientInterface;
-use Janfish\Rpc\Client\Exception;
+namespace Janfish\Rpc\Client;
 
 /**
  * Janfish RPC client
@@ -56,7 +53,17 @@ class Socket implements ClientInterface
             throw new Exception("stream_socket_client fail errno={$errno} errstr={$errstr}");
         }
         fwrite($fp, $ctx.self::RPC_EOL);
-        $res = fread($fp, 1024);
+
+        $res = '';
+        while (!feof($fp)) {
+            $tmp = stream_socket_recvfrom($fp, 1024);
+            if ($pos = strpos($tmp, self::RPC_EOL)) {
+                $res .= substr($tmp, 0, $pos);
+                break;
+            } else {
+                $res .= $tmp;
+            }
+        }
         fclose($fp);
         return $res;
     }

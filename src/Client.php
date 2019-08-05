@@ -2,10 +2,10 @@
 
 namespace Janfish\Rpc;
 
-use Application\Core\Components\Rpc\Socket;
 use Janfish\Rpc\Client\ClientInterface;
 use Janfish\Rpc\Client\Http;
 use Janfish\Rpc\Client\Exception;
+use Janfish\Rpc\Client\Socket;
 
 /**
  * Janfish RPC client
@@ -79,7 +79,6 @@ class Client
             throw new Exception('Config error');
         }
         return $this->parse((self::getClient($config['url']))->remoteCall($this->make($methodName, $args, $config['id'], $config['secret'], $config['signType'] ?? 'sha1')));
-
     }
 
     /**
@@ -132,7 +131,6 @@ class Client
      */
     protected function parse(string $res)
     {
-
         $ctx = json_decode($res, true);
         if (isset($ctx['ok']) && $ctx['ok']) {
             return $ctx['data'];

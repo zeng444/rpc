@@ -42,8 +42,16 @@ class Dispatcher
     protected $afterInstanced;
 
 
+    /**
+     * Dispatcher constructor.
+     * @param $data
+     * @throws Exception
+     */
     public function __construct($data)
     {
+        if (!isset($data['call']) || !isset($data['service']) || !isset($data['args'])) {
+            throw new Exception('参数错误');
+        }
         list($this->call, $this->service, $this->args) = [$data['call'], $data['service'], $data['args']];
     }
 
