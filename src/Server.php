@@ -21,7 +21,16 @@ class Server
      */
     protected $appId;
 
+    /**
+     *
+     * @var
+     */
     protected $res;
+
+    /**
+     *
+     * @var
+     */
     protected $config;
 
     /**
@@ -30,18 +39,26 @@ class Server
      */
     protected $appSecret;
 
+    /**
+     *
+     * @var
+     */
     public $dispatch;
 
+    /**
+     *
+     * @var
+     */
     const RPC_EOL = "\r\n";
 
 
     /**
      * Server constructor.
      * @param array $options
-     * @param array $res
+     * @param string $res
      * @throws Exception
      */
-    public function __construct(array $options, array $res = [])
+    public function __construct(array $options, string $res)
     {
         $this->config = $options;
         if (isset($options['id'])) {
@@ -53,21 +70,11 @@ class Server
         if (!$this->appId || !$this->appSecret) {
             throw new Exception('rpc client params error');
         }
-        $this->res = $res ?: self::getHttpRequestRawBody();
+        $this->res = @json_decode($res, true);
+        if (!$this->res) {
+            throw new Exception('rpc request data error');
+        }
         $this->dispatch = new Dispatcher($this->res);
-    }
-
-
-    /**
-     * Author:Robert
-     *
-     * @return array|false|string
-     */
-    public static function getHttpRequestRawBody(): array
-    {
-        $raw = file_get_contents("php://input");
-        $data = json_decode($raw, true);
-        return $data ?: [];
     }
 
     /**

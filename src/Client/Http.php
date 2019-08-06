@@ -12,15 +12,29 @@ namespace Janfish\Rpc\Client;
 class Http implements ClientInterface
 {
 
+    /**
+     * Author:Robert
+     *
+     * @var string
+     */
     protected $host;
 
     /**
-     * Http constructor.
-     * @param $host
+     * Author:Robert
+     *
+     * @var int
      */
-    public function __construct($host)
+    protected $timeout;
+
+    /**
+     * Http constructor.
+     * @param string $host
+     * @param int $timeout
+     */
+    public function __construct(string $host, int $timeout = 2)
     {
         $this->host = $host;
+        $this->timeout = $timeout;
     }
 
     /**
@@ -35,6 +49,7 @@ class Http implements ClientInterface
         // RPC call
         $options = [
             'http' => [
+                'timeout' => $this->timeout,
                 'method' => 'POST',
                 'header' => sprintf("Content-Type: application/json; charset: utf-8\r\nContent-Length: %d\r\nAccept-Language: %s\r\nCurrency: %s\r\n", strlen($ctx), isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : '', isset($_SERVER['HTTP_CURRENCY']) ? $_SERVER['HTTP_CURRENCY'] : ''),
                 'content' => $ctx,

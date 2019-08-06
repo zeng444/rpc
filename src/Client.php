@@ -75,24 +75,26 @@ class Client
         if (!$config) {
             throw new Exception('Config for `'.$this->serviceName.'` not found.');
         }
-        if (!isset($config['id']) || !isset($config['secret'])) {
+        if (!isset($config['id']) || !isset($config['secret']) || !isset($config['url'])) {
             throw new Exception('Config error');
         }
-        return $this->parse((self::getClient($config['url']))->remoteCall($this->make($methodName, $args, $config['id'], $config['secret'], $config['signType'] ?? 'sha1')));
+        return $this->parse((self::getClient($config['url'], $config['timeout'] ?? 2))->remoteCall($this->make($methodName, $args, $config['id'], $config['secret'], $config['signType'] ?? 'sha1')));
+
     }
 
     /**
      * Author:Robert
      *
      * @param $url
+     * @param $timeout
      * @return ClientInterface
      */
-    public static function getClient(string $url): ClientInterface
+    public static function getClient(string $url, int $timeout): ClientInterface
     {
         if (preg_match('/^http/', $url)) {
-            return new Http($url);
+            return new Http($url, $timeout);
         } else {
-            return new Socket($url);
+            return new Socket($url, $timeout);
         }
     }
 
