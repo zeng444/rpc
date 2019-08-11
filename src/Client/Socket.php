@@ -25,7 +25,14 @@ class Socket implements ClientInterface
      *
      * @var
      */
-    protected $timeout;
+    protected $timeout = 5;
+
+    /**
+     * Author:Robert
+     *
+     * @var int
+     */
+    protected $connectTimeout = 2;
 
 
     /**
@@ -39,17 +46,23 @@ class Socket implements ClientInterface
     const RPC_EOL = "\r\n";
 
     /**
-     * Socket constructor.file_get_contents timeout
-     * @param string $host
-     * @param int $timeout
+     * Socket constructor.
+     * @param array $options
      */
-    public function __construct(string $host, int $timeout = 2)
+    public function __construct(array $options = [])
     {
-        $this->host = $host;
-        $this->timeout = $timeout;
+        if (isset($options['host'])) {
+            $this->host = $options['host'];
+        }
+        if (isset($options['timeout'])) {
+            $this->timeout = $options['timeout'];
+        }
+        if (isset($options['connectTimeout'])) {
+            $this->connectTimeout = $options['connectTimeout'];
+        }
     }
 
-    /***
+    /***stream_socket_client
      * Author:Robert
      *
      * @param string $ctx
@@ -58,7 +71,7 @@ class Socket implements ClientInterface
      */
     public function remoteCall(string $ctx): string
     {
-        $fp = stream_socket_client($this->host, $errno, $errstr, $this->timeout);
+        $fp = @stream_socket_client($this->host, $errno, $errstr, $this->connectTimeout);
         if (!$fp) {
             throw new Exception("stream_socket_client fail errno={$errno} errstr={$errstr}");
         }
@@ -77,7 +90,6 @@ class Socket implements ClientInterface
             } else {
                 $res .= $tmp;
             }
-
         }
         fclose($fp);
         return $res;

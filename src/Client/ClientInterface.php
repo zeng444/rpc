@@ -11,6 +11,8 @@ namespace Janfish\Rpc\Client;
 interface ClientInterface
 {
 
+    public function __construct(array $options = []);
+
     /**'
      * Author:Robert
      *

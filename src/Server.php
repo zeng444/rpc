@@ -2,9 +2,8 @@
 
 namespace Janfish\Rpc;
 
-use Janfish\Rpc\Server\Authorization;
-use Janfish\Rpc\Server\Dispatcher;
 use Janfish\Rpc\Server\Exception;
+use Janfish\Rpc\Server\Protocol\Tcp;
 
 /**
  * Author:Robert
@@ -17,149 +16,118 @@ class Server
 
     /**
      *
-     * @var
      */
-    protected $appId;
+    const RESTART_SLEEP_TIME = 1;
 
     /**
-     *
-     * @var
+     * MAX_COROUTINE
      */
-    protected $res;
+    const MAX_COROUTINE = 300000;
 
-    /**
-     *
-     * @var
-     */
-    protected $config;
-
-    /**
-     *
-     * @var
-     */
-    protected $appSecret;
-
-    /**
-     *
-     * @var
-     */
-    public $dispatch;
-
-    /**
-     *
-     * @var
-     */
-    const RPC_EOL = "\r\n";
-
-
-    /**
-     * Server constructor.
-     * @param array $options
-     * @param string $res
-     * @throws Exception
-     */
-    public function __construct(array $options, string $res)
-    {
-        $this->config = $options;
-        if (isset($options['id'])) {
-            $this->appId = $options['id'];
-        }
-        if (isset($options['secret'])) {
-            $this->appSecret = $options['secret'];
-        }
-        if (!$this->appId || !$this->appSecret) {
-            throw new Exception('rpc client params error');
-        }
-        $this->res = @json_decode($res, true);
-        if (!$this->res) {
-            throw new Exception('rpc request data error');
-        }
-        $this->dispatch = new Dispatcher($this->res);
-    }
 
     /**
      * Author:Robert
      *
-     * @param $data
-     * @return string
-     */
-    public function end($data): string
-    {
-        return @json_encode($data).self::RPC_EOL;
-    }
-
-    /**
-     * Author:Robert
-     *
-     * @param $loader
-     */
-    public function registerLoader($loader): void
-    {
-        $this->dispatch->registerAutoLoad($loader);
-    }
-
-    /**
-     * Author:Robert
-     *
-     * @param $method
-     */
-    public function afterInstancedService($method): void
-    {
-        $this->dispatch->afterInstanced($method);
-    }
-
-    /**
-     * Author:Robert
-     *
-     * @param $method
-     */
-    public function afterFindOutService($method): void
-    {
-        $this->dispatch->afterFindOut($method);
-    }
-
-    /**
-     * Author:Robert
-     *
+     * @param array $config
+     * @param array $serviceConfigs
+     * @param string $type
      * @return bool
      * @throws Exception
      */
-    public function checkSign(): bool
+    public static function start(array $config, array $serviceConfigs = [], string $type = Tcp::PROTOCOL_NAME): bool
     {
-        $authorization = new Authorization($this->config);
-        return $authorization->check($this->res);
+        \Swoole\Coroutine::set([
+            'max_coroutine' => self::MAX_COROUTINE,
+        ]);
+        $serverConfig = $config['server'] ?? [];
+        $server = self::createServer($serverConfig, $type);
+        if (isset($config['options'])) {
+            $server->set($config['options']);
+        }
+        $server->registerBootstrap(function ($req) use ($serverConfig, $serviceConfigs) {
+            $router = new Server\Router($serviceConfigs, $req, $serverConfig['log_file'] ?? '');
+            $router->afterFindOutService(function ($service) {
+                $service[0] = ($serverConfig['servicePrefix'] ?? 'Services\\').$service[0];
+                return $service;
+            });
+            $router->afterInstancedService(function ($instance) {
+                if ($instance instanceof Server\Service\ServiceInterface) {
+                    $instance->init();
+                }
+            });
+            return $router->handle();
+        });
+        return $server->start();
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @param array $serverConfig
+     * @param string $type
+     * @return bool
+     * @throws Exception
+     */
+    public static function stop(array $serverConfig, string $type = Tcp::PROTOCOL_NAME): bool
+    {
+        return (self::createServer($serverConfig, $type))->stop();
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @param array $serverConfig
+     * @param string $type
+     * @return bool
+     * @throws Exception
+     */
+    public static function reload(array $serverConfig, string $type = Tcp::PROTOCOL_NAME): bool
+    {
+        return (self::createServer($serverConfig, $type))->reload();
     }
 
 
     /**
      * Author:Robert
      *
-     * @return string
+     * @param array $serverConfig
+     * @param array $serviceConfigs
+     * @param string $type
+     * @return bool
+     * @throws Exception
      */
-    public function handle()
+    public static function restart(array $serverConfig, array $serviceConfigs = [], string $type = Tcp::PROTOCOL_NAME): bool
     {
-        try {
-            if ($this->checkSign() === false) {
-                return $this->end([
-                    'data' => '',
-                    'ok' => false,
-                    'trace' => '',
-                    'error' => 'Forbidden ',
-                ]);
-            }
-            return $this->end([
-                'data' => $this->dispatch->run(),
-                'ok' => true,
-                'trace' => '',
-                'error' => '',
-            ]);
-        } catch (Exception $e) {
-            return $this->end([
-                'data' => '',
-                'ok' => false,
-                'trace' => $e->getTraceAsString(),
-                'error' => $e->getMessage(),
-            ]);
+
+        if (!(self::createServer($serverConfig, $type))->stop()) {
+            return false;
         }
+        sleep(self::RESTART_SLEEP_TIME);
+        return self::start($serverConfig, $serviceConfigs, $type);
     }
+
+    /**
+     * Author:Robert
+     *
+     * @param array $serverConfig
+     * @param string $type
+     * @return bool|Server\Protocol\Tcp
+     * @throws Exception
+     */
+    private static function createServer(array $serverConfig, string $type = Tcp::PROTOCOL_NAME)
+    {
+        $type = 'Janfish\\Rpc\\Server\\Protocol\\'.$type;
+        if (!class_exists($type)) {
+            throw  new Exception('不存在的服务器协议');
+        }
+        $server = new $type($serverConfig);
+        if (!is_subclass_of($server, 'Janfish\\Rpc\\Server\\Protocol\\Adapter')) {
+            throw  new Exception('所属服务器协议不合法');
+        }
+        if (!call_user_func([$server, 'create'])) {
+            return false;
+        }
+        return $server;
+    }
+
 }

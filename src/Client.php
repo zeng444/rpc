@@ -17,12 +17,24 @@ use Janfish\Rpc\Client\Socket;
 class Client
 {
 
+    /**
+     * @var
+     */
     protected $serviceName;
 
+    /**
+     * @var string
+     */
     protected $className;
 
+    /**
+     * @var
+     */
     protected static $config;
 
+    /**
+     * @var
+     */
     protected static $servicePrefix;
 
     /**
@@ -71,30 +83,32 @@ class Client
      */
     public function __call(string $methodName, array $args)
     {
-        $config = self::$config[$this->serviceName] ?? '';
+        $config = self::$config[$this->serviceName] ?? [];
         if (!$config) {
             throw new Exception('Config for `'.$this->serviceName.'` not found.');
         }
-        if (!isset($config['id']) || !isset($config['secret']) || !isset($config['url'])) {
+        if (!isset($config['id']) || !isset($config['secret']) || !isset($config['host'])) {
             throw new Exception('Config error');
         }
-        return $this->parse((self::getClient($config['url'], $config['timeout'] ?? 2))->remoteCall($this->make($methodName, $args, $config['id'], $config['secret'], $config['signType'] ?? 'sha1')));
-
+        return $this->parse((self::getClient($config))->remoteCall($this->make($methodName, $args, $config['id'], $config['secret'], $config['signType'] ?? 'sha1')));
     }
 
     /**
      * Author:Robert
      *
-     * @param $url
-     * @param $timeout
+     * @param array $config
      * @return ClientInterface
      */
-    public static function getClient(string $url, int $timeout): ClientInterface
+    public static function getClient(array $config = []): ClientInterface
     {
-        if (preg_match('/^http/', $url)) {
-            return new Http($url, $timeout);
+        //TODO lake of web socket client
+        $host = $config['host'] ?? '';
+        if (preg_match('/^http/i', $host)) {
+            return new Http($config);
+        } elseif (preg_match('/^tcp/i', $host)) {
+            return new Socket($config);
         } else {
-            return new Socket($url, $timeout);
+            return new Socket($config);
         }
     }
 
