@@ -3,7 +3,6 @@
 use \Janfish\Rpc\Server;
 
 define('ROOT_PATH', dirname(__DIR__).DIRECTORY_SEPARATOR);
-define('CORE_PATH', ROOT_PATH.'core'.DIRECTORY_SEPARATOR);
 define('LOG_PATH', ROOT_PATH.'logs'.DIRECTORY_SEPARATOR);
 
 try {
