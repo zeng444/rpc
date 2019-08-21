@@ -45,7 +45,7 @@ try {
             include ROOT_PATH.'configs/components.php';
         });
 
-    } elseif (in_array($command, ['reload', 'start'])) {
+    } elseif (in_array($command, ['reload', 'start', 'stop'])) {
         Server::$command($serverConfig, $type);
     }
 

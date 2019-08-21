@@ -41,7 +41,10 @@ class Server
             'max_coroutine' => self::MAX_COROUTINE,
         ]);
         $serverConfig = $config['server'] ?? [];
-        $server = self::createServer($serverConfig, $type);
+        $server = self::createServer($serverConfig, ucfirst($type));
+        if (!call_user_func([$server, 'create'])) {
+            return false;
+        }
         if (isset($config['options'])) {
             $server->set($config['options']);
         }
@@ -76,7 +79,7 @@ class Server
      */
     public static function stop(array $serverConfig, string $type = Tcp::PROTOCOL_NAME): bool
     {
-        return (self::createServer($serverConfig, $type))->stop();
+        return (self::createServer($serverConfig, ucfirst($type)))->stop();
     }
 
     /**
@@ -89,7 +92,7 @@ class Server
      */
     public static function reload(array $serverConfig, string $type = Tcp::PROTOCOL_NAME): bool
     {
-        return (self::createServer($serverConfig, $type))->reload();
+        return (self::createServer($serverConfig, ucfirst($type)))->reload();
     }
 
 
@@ -104,12 +107,12 @@ class Server
      */
     public static function restart(array $serverConfig, array $serviceConfigs = [], string $type = Tcp::PROTOCOL_NAME): bool
     {
-
+        $type = ucfirst($type);
         if (!(self::createServer($serverConfig, $type))->stop()) {
             return false;
         }
         sleep(self::RESTART_SLEEP_TIME);
-        return self::start($serverConfig, $serviceConfigs, $type);
+        return self::start($serverConfig, $serviceConfigs,$type);
     }
 
     /**
@@ -129,9 +132,6 @@ class Server
         $server = new $type($serverConfig);
         if (!is_subclass_of($server, 'Janfish\\Rpc\\Server\\Protocol\\Adapter')) {
             throw  new Exception('所属服务器协议不合法');
-        }
-        if (!call_user_func([$server, 'create'])) {
-            return false;
         }
         return $server;
     }
