@@ -11,8 +11,7 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=7.1.0",
-    "ext-swoole": "*",
-    "ext-inotify": "*"
+    "ext-swoole": "*"
   },
   "autoload": {
     "psr-4": {
