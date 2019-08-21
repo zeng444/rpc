@@ -3,7 +3,7 @@
 namespace Janfish\Rpc\Server\Protocol;
 
 use Janfish\Rpc\Server\Exception;
-use Swoole\WebSocket\Server as WebSocketServer;
+use Swoole\WebSocket\Server as SwooleServer;
 
 
 /**
@@ -74,7 +74,7 @@ class WebSocket extends Adapter
         if ($this->isRunning()) {
             return false;
         }
-        $this->server = new WebSocketServer($this->host, $this->port);
+        $this->server = new SwooleServer($this->host, $this->port);
         return true;
     }
 
@@ -87,7 +87,8 @@ class WebSocket extends Adapter
      */
     public function start(): bool
     {
-        $callback = $this->bootstrap;
+        $this->runBootstrap();
+        $callback = $this->request;
         if (!is_callable($callback)) {
             throw new Exception('启动信息不可用');
         }

@@ -5,12 +5,9 @@ ini_set('log_errors', '0');
 ini_set('memory_limit', '128M');
 
 return new \Phalcon\Config([
-    'service' => [
-        'id' => '1231312313',
-        'secret' => '1231312313',
-    ],
     'logger' => [
         'file' => ROOT_PATH.'logs/debug.log',
+        'rpc' => ROOT_PATH.'logs/rpc.log',
     ],
     'queue' => [
         "host" => "beanstalkd",

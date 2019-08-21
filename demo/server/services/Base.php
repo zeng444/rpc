@@ -1,7 +1,8 @@
 <?php
 
-namespace Core;
+namespace Services;
 
+use Janfish\Rpc\Server\Service\ServiceInterface;
 use Phalcon\Di;
 use Phalcon\DI\InjectionAwareInterface;
 use Phalcon\DiInterface;
@@ -14,7 +15,7 @@ use Phalcon\DiInterface;
  *
  * @property  \Phalcon\Db\Adapter $db
  */
-abstract class ServiceBase implements InjectionAwareInterface
+abstract class Base implements InjectionAwareInterface,ServiceInterface
 {
 
     /**
@@ -31,21 +32,13 @@ abstract class ServiceBase implements InjectionAwareInterface
      */
     protected $db;
 
-    /**
-     * ServiceBase constructor.
-     */
-    public function __construct()
-    {
-        $this->init();
-    }
 
     /**
-     * Author:Robert
-     *
+     * db helper
      */
     public function init()
     {
-        $this->setDI(Di::getDefault());
+        $this->setDi(Di::getDefault());
         $this->db = $this->getDi()->get('db');
     }
 
@@ -53,7 +46,7 @@ abstract class ServiceBase implements InjectionAwareInterface
     /**
      * @param DiInterface $di
      */
-    public function setDI(DiInterface $di)
+    public function setDi(DiInterface $di)
     {
         $this->_di = $di;
     }

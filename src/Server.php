@@ -31,10 +31,11 @@ class Server
      * @param array $config
      * @param array $serviceConfigs
      * @param string $type
+     * @param $initCallback
      * @return bool
      * @throws Exception
      */
-    public static function start(array $config, array $serviceConfigs = [], string $type = Tcp::PROTOCOL_NAME): bool
+    public static function start(array $config, array $serviceConfigs = [], string $type = Tcp::PROTOCOL_NAME, $initCallback = ''): bool
     {
         \Swoole\Coroutine::set([
             'max_coroutine' => self::MAX_COROUTINE,
@@ -44,7 +45,12 @@ class Server
         if (isset($config['options'])) {
             $server->set($config['options']);
         }
-        $server->registerBootstrap(function ($req) use ($serverConfig, $serviceConfigs) {
+        $server->registerBoostrap(function () use ($initCallback) {
+            if (is_callable($initCallback)) {
+                $initCallback();
+            }
+        });
+        $server->registerRequest(function ($req) use ($serverConfig, $serviceConfigs) {
             $router = new Server\Router($serviceConfigs, $req, $serverConfig['log_file'] ?? '');
             $router->afterFindOutService(function ($service) {
                 $service[0] = ($serverConfig['servicePrefix'] ?? 'Services\\').$service[0];

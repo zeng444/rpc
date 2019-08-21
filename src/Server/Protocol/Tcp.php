@@ -97,7 +97,8 @@ class Tcp extends Adapter
      */
     public function start(): bool
     {
-        $callback = $this->bootstrap;
+        $this->runBootstrap();
+        $callback = $this->request;
         if (!is_callable($callback)) {
             throw new Exception('启动信息不可用');
         }

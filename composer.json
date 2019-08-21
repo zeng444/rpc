@@ -10,7 +10,9 @@
   "license": "MIT",
   "minimum-stability": "dev",
   "require": {
-    "php": ">=7.1.0"
+    "php": ">=7.1.0",
+    "ext-swoole": "*",
+    "ext-inotify": "*"
   },
   "autoload": {
     "psr-4": {

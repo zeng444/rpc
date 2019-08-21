@@ -41,6 +41,13 @@ abstract class Adapter
      *
      * @var
      */
+    protected $request;
+
+    /**
+     * Author:Robert
+     *
+     * @var
+     */
     protected $server;
 
     /**
@@ -159,10 +166,36 @@ abstract class Adapter
     /**
      * Author:Robert
      *
+     * @param $request
+     */
+    public function registerRequest($request): void
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * Author:Robert
+     *
      * @param $bootstrap
      */
-    public function registerBootstrap($bootstrap): void
+    public function registerBoostrap($bootstrap): void
     {
         $this->bootstrap = $bootstrap;
     }
+
+
+    /**
+     * Author:Robert
+     *
+     */
+    public function runBootstrap()
+    {
+        $bootstrapCallback = $this->bootstrap;
+        if (is_callable($bootstrapCallback)) {
+            $this->event('workerstart', function ($server) use ($bootstrapCallback) {
+                $bootstrapCallback($server);
+            });
+        }
+    }
+
 }
