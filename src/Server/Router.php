@@ -162,6 +162,7 @@ class Router
      * Author:Robert
      *
      * @return string
+     * @throws Exception
      */
     public function handle(): string
     {
