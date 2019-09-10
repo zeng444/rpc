@@ -7,7 +7,7 @@ namespace Janfish\Rpc\Server\Service;
  *
  * Interface ServiceInterface
  */
-interface  ServiceInterface
+interface ServiceInterface
 {
 
     /**

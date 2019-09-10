@@ -2,7 +2,6 @@
 
 namespace Janfish\Rpc\Server\Protocol;
 
-
 /**
  * Author:Robert
  *

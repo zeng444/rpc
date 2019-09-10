@@ -70,5 +70,4 @@ class File
     {
         return $this->write($msg, SEASLOG_DEBUG);
     }
-
 }

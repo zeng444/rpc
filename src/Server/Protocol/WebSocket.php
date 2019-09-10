@@ -5,7 +5,6 @@ namespace Janfish\Rpc\Server\Protocol;
 use Janfish\Rpc\Server\Exception;
 use Swoole\WebSocket\Server as SwooleServer;
 
-
 /**
  * Author:Robert
  *
@@ -97,6 +96,4 @@ class WebSocket extends Adapter
         });
         return $this->server->start();
     }
-
-
 }

@@ -87,5 +87,4 @@ class Http implements ClientInterface
         curl_close($ch);
         return $response;
     }
-
 }

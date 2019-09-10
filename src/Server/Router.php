@@ -2,7 +2,6 @@
 
 namespace Janfish\Rpc\Server;
 
-
 use Janfish\Rpc\Logger\File as FileLogger;
 use Janfish\Rpc\Server\Router\Dispatcher;
 
@@ -190,5 +189,4 @@ class Router
             ]);
         }
     }
-
 }

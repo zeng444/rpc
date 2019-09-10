@@ -2,7 +2,6 @@
 
 namespace Janfish\Rpc\Client;
 
-
 /**
  * Janfish RPC client
  * Author:Robert
