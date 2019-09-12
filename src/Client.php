@@ -96,6 +96,20 @@ class Client
     /**
      * Author:Robert
      *
+     * @param $methodName
+     * @param array $args
+     * @return mixed
+     */
+    public static function __callStatic($methodName, array $args)
+    {
+        $className = get_called_class();
+        $instance = new $className();
+        return $instance->$methodName(...$args);
+    }
+
+    /**
+     * Author:Robert
+     *
      * @param array $config
      * @return ClientInterface
      */

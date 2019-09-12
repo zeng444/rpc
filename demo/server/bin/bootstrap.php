@@ -10,7 +10,7 @@ try {
     /**
      * Autoload Object
      */
-    require_once ROOT_PATH.'vendor/autoload.php';
+    require_once ROOT_PATH.'../../vendor/autoload.php';
 
 
     $env = isset($_ENV['SITE_ENV']) ? strtolower($_ENV['SITE_ENV']) : 'prod';
