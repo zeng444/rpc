@@ -24,6 +24,20 @@ class Server
      */
     const MAX_COROUTINE = 300000;
 
+    /**
+     * Author:Robert
+     *
+     * @return array
+     */
+    public static function defaultOptions(): array
+    {
+        return [
+            'open_eof_check' => true,
+            'package_eof' => "\r\n",
+            'open_eof_split' => true,
+        ];
+    }
+
 
     /**
      * Author:Robert
@@ -45,9 +59,11 @@ class Server
         if (!call_user_func([$server, 'create'])) {
             return false;
         }
+        $options = self::defaultOptions();
         if (isset($config['options'])) {
-            $server->set($config['options']);
+            $options = array_merge(self::defaultOptions(), $config['options']);
         }
+        $server->set($options);
         $server->registerBoostrap(function () use ($initCallback) {
             if (is_callable($initCallback)) {
                 $initCallback();
@@ -112,7 +128,7 @@ class Server
             return false;
         }
         sleep(self::RESTART_SLEEP_TIME);
-        return self::start($serverConfig, $serviceConfigs,$type);
+        return self::start($serverConfig, $serviceConfigs, $type);
     }
 
     /**
