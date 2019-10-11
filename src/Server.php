@@ -34,7 +34,7 @@ class Server
         return [
             'open_eof_check' => true,
             'package_eof' => "\r\n",
-            'open_eof_split' => true,
+            'open_eof_split' => false,
         ];
     }
 
