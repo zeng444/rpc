@@ -70,9 +70,10 @@ class Socket implements ClientInterface
      */
     public function remoteCall(string $ctx): string
     {
-        $fp = @stream_socket_client($this->host, $errno, $errstr, $this->connectTimeout);
+        $endPos = substr(self::RPC_EOL, 0, 1);
+        $fp = @stream_socket_client($this->host, $errNo, $errStr, $this->connectTimeout);
         if (!$fp) {
-            throw new Exception("stream_socket_client fail errno={$errno} errstr={$errstr}");
+            throw new Exception("stream_socket_client fail errno={$errNo} errstr={$errStr}");
         }
         fwrite($fp, $ctx.self::RPC_EOL);
         stream_set_timeout($fp, $this->timeout);
@@ -83,7 +84,7 @@ class Socket implements ClientInterface
             if ($info['timed_out']) {
                 throw new Exception("stream_socket_client timeout");
             }
-            if ($pos = strpos($tmp, self::RPC_EOL)) {
+            if ($pos = strpos($tmp, $endPos)) {
                 $res .= substr($tmp, 0, $pos);
                 break;
             } else {
