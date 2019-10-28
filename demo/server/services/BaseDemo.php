@@ -15,7 +15,7 @@ use Phalcon\DiInterface;
  *
  * @property  \Phalcon\Db\Adapter $db
  */
-abstract class Base implements InjectionAwareInterface,ServiceInterface
+abstract class BaseDemo implements InjectionAwareInterface,ServiceInterface
 {
 
     /**

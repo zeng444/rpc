@@ -2,9 +2,9 @@
 
 namespace Services\User;
 
-use Core\ServiceBase;
+use Services\BaseDemo;
 
-class Profile extends ServiceBase
+class Profile extends BaseDemo
 {
 
     public function getById(int $id)
