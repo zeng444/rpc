@@ -3,6 +3,7 @@
 namespace Janfish\Rpc\Server\Router;
 
 use Janfish\Rpc\Server\Exception;
+use Janfish\Rpc\Server\Service\ServiceInterface;
 
 /**
  * Author:Robert
@@ -109,6 +110,9 @@ class Dispatcher
             throw new Exception(sprintf('class %s not exist', $className));
         }
         $instance = new $className();
+        if (!$instance instanceof ServiceInterface) {
+            throw new Exception(sprintf('class %s not exist', $className));
+        }
         if (!method_exists($instance, $methodName)) {
             throw new Exception(sprintf('method %s::%s not exist', $className, $methodName));
         }

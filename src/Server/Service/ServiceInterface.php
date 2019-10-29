@@ -10,8 +10,4 @@ namespace Janfish\Rpc\Server\Service;
 interface ServiceInterface
 {
 
-    /**
-     * 被远程调用必须继承的方法
-     */
-    public function init();
 }
