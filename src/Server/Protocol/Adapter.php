@@ -56,6 +56,17 @@ abstract class Adapter
      */
     abstract function start(): bool;
 
+
+    /**
+     * Author:Robert
+     *
+     * @return mixed|SwooleServer
+     */
+    public function getServer()
+    {
+        return $this->server;
+    }
+
     /**
      * Author:Robert
      *

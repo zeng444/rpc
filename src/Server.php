@@ -64,9 +64,9 @@ class Server
             $options = array_merge(self::defaultOptions(), $config['options']);
         }
         $server->set($options);
-        $server->registerBoostrap(function () use ($initCallback) {
+        $server->registerBoostrap(function () use ($initCallback, $server) {
             if (is_callable($initCallback)) {
-                $initCallback();
+                $initCallback($server);
             }
         });
         $server->registerRequest(function ($req) use ($serverConfig, $serviceConfigs) {
