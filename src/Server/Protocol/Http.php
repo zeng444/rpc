@@ -104,7 +104,7 @@ class Http extends Adapter
             throw new Exception('启动信息不可用');
         }
         $this->event('request', function (\Swoole\Http\Request $request, \Swoole\Http\Response $response) use ($callback) {
-            $response->end($callback($request->rawContent(), null));
+            $response->end($callback($request->rawContent()));
         });
         return $this->server->start();
     }

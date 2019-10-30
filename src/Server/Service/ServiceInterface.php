@@ -9,5 +9,4 @@ namespace Janfish\Rpc\Server\Service;
  */
 interface ServiceInterface
 {
-
 }

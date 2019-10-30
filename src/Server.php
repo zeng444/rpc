@@ -69,15 +69,15 @@ class Server
                 $initCallback();
             }
         });
-        $server->registerRequest(function ($req, $server) use ($serverConfig, $serviceConfigs) {
+        $server->registerRequest(function ($req) use ($serverConfig, $serviceConfigs) {
             $router = new Server\Router($serviceConfigs, $req, $serverConfig['log_file'] ?? '');
             $router->afterFindOutService(function ($service) {
                 $service[0] = ($serverConfig['servicePrefix'] ?? 'Services\\').$service[0];
                 return $service;
             });
-            $router->afterInstancedService(function ($instance) use ($server) {
+            $router->afterInstancedService(function ($instance) {
                 if (method_exists($instance, "init")) {
-                    $instance->init($server);
+                    $instance->init();
                 }
             });
             return $router->handle();

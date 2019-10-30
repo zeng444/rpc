@@ -103,7 +103,7 @@ class Tcp extends Adapter
             throw new Exception('启动信息不可用');
         }
         $this->event('receive', function (SwooleServer $server, $fd, $reactor_id, $data) use ($callback) {
-            $server->send($fd, $callback($data, $server));
+            $server->send($fd, $callback($data));
         });
         return $this->server->start();
     }

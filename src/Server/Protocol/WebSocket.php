@@ -92,7 +92,7 @@ class WebSocket extends Adapter
             throw new Exception('启动信息不可用');
         }
         $this->event('message', function (WebSocketServer $server, $frame) use ($callback) {
-            $server->push($frame->fd, $callback($frame->data, $server));
+            $server->push($frame->fd, $callback($frame->data));
         });
         return $this->server->start();
     }

@@ -33,13 +33,22 @@ abstract class BaseDemo implements InjectionAwareInterface,ServiceInterface
     protected $db;
 
 
+
     /**
-     * db helper
+     * Base constructor.
      */
-    public function init()
+    public function __construct()
     {
         $this->setDi(Di::getDefault());
         $this->db = $this->getDi()->get('db');
+    }
+
+    /**
+     * Author:Robert
+     *
+     */
+    public function init()
+    {
     }
 
 
