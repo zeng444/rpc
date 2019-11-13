@@ -95,7 +95,7 @@ class Server
      */
     public static function stop(array $serverConfig, string $type = Tcp::PROTOCOL_NAME): bool
     {
-        return (self::createServer($serverConfig, ucfirst($type)))->stop();
+        return self::createServer($serverConfig['server'] ?? [], ucfirst($type))->stop();;
     }
 
     /**
@@ -108,7 +108,7 @@ class Server
      */
     public static function reload(array $serverConfig, string $type = Tcp::PROTOCOL_NAME): bool
     {
-        return (self::createServer($serverConfig, ucfirst($type)))->reload();
+        return (self::createServer($serverConfig['server'] ?? [], ucfirst($type)))->reload();
     }
 
 
@@ -124,7 +124,7 @@ class Server
     public static function restart(array $serverConfig, array $serviceConfigs = [], string $type = Tcp::PROTOCOL_NAME): bool
     {
         $type = ucfirst($type);
-        if (!(self::createServer($serverConfig, $type))->stop()) {
+        if (!(self::stop($serverConfig, $type))) {
             return false;
         }
         sleep(self::RESTART_SLEEP_TIME);
