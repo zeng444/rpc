@@ -187,13 +187,14 @@ class Router
                 'trace' => $e->getTraceAsString(),
                 'error' => $e->getMessage(),
             ]);
-        } catch (\Exception $e) {
-//            return $this->response([
-//                'data' => '',
-//                'ok' => false,
-//                'trace' => $e->getTraceAsString(),
-//                'error' => $e->getMessage(),
-//            ]);
         }
+        //        catch (\Exception $e) {
+        //            return $this->response([
+        //                'data' => '',
+        //                'ok' => false,
+        //                'trace' => $e->getTraceAsString(),
+        //                'error' => $e->getMessage(),
+        //            ]);
+        //        }
     }
 }
