@@ -84,7 +84,8 @@ class Socket implements ClientInterface
             if ($info['timed_out']) {
                 throw new Exception("stream_socket_client timeout");
             }
-            if ($pos = strpos($tmp, $endPos)) {
+            $pos = strpos($tmp, $endPos);
+            if ($pos !== false) {
                 $res .= substr($tmp, 0, $pos);
                 break;
             } else {
