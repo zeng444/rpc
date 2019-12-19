@@ -18,10 +18,7 @@ class Dispatcher
      */
     protected $config;
 
-    /**
-     * @var int
-     */
-    protected $service;
+
 
     /**
      * @var int
@@ -51,23 +48,12 @@ class Dispatcher
      */
     public function __construct($data)
     {
-        if (!isset($data['call']) || !isset($data['service']) || !isset($data['args'])) {
+        if (!isset($data['call']) || !isset($data['args'])) {
             throw new Exception('参数错误');
         }
-        list($this->call, $this->service, $this->args) = [$data['call'], $data['service'], $data['args']];
+        list($this->call, $this->args) = [$data['call'], $data['args']];
     }
 
-
-    /**
-     * Get service name
-     * Author:Robert
-     *
-     * @return string
-     */
-    public function getService(): string
-    {
-        return $this->service;
-    }
 
     /**
      * Get called method of service

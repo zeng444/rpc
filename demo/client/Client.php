@@ -8,9 +8,22 @@ $services = require_once 'configs/services.php';
 
 try {
     Client::init($services);
-    $user = new Services\CallCenter\Services\User\Profile();
-    $data = $user->getById(12);
-    var_dump($data);
+
+//    $caller = new Client\Caller($services);
+//    $caller->batch([
+//        [
+//            'class' => 'Services\CallCenter\User\Profile',
+//            'method' => 'getById',
+//            'args' => [],
+//        ],
+//        [
+//            'call' => 'Services\CallCenter\User\Profile',
+//            'args' => [],
+//        ],
+//    ]);
+
+        $data = Services\CallCenter\User\Profile::getById();
+        var_dump($data);
 } catch (Exception  $e) {
     echo $e->getMessage();
 }

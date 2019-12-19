@@ -1,12 +1,12 @@
 <?php
 
-namespace Janfish\Rpc\Server\Dispatcher;
+namespace Janfish\Rpc\Server\Router;
 
-use Janfish\Rpc\Server\Dispatcher;
+
 use Janfish\Rpc\Server\Exception;
 
 
-class Batch
+class BatchDispatcher
 {
 
     /**
@@ -26,7 +26,7 @@ class Batch
     /**
      * Author:Robert
      *
-     * @var 
+     * @var
      */
     protected $afterFindOut;
 
@@ -40,6 +40,7 @@ class Batch
         if (!isset($data['batch']) || !is_array($data['batch'])) {
             throw new Exception('参数错误');
         }
+
         $this->callData = $data['batch'];
     }
 

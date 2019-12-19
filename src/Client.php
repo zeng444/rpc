@@ -2,10 +2,10 @@
 
 namespace Janfish\Rpc;
 
-use Janfish\Rpc\Client\ClientInterface;
-use Janfish\Rpc\Client\Http;
-use Janfish\Rpc\Client\Exception;
-use Janfish\Rpc\Client\Socket;
+use Janfish\Rpc\Client\Protocol\ClientInterface;
+use Janfish\Rpc\Client\Protocol\Http;
+use Janfish\Rpc\Client\Protocol\Exception;
+use Janfish\Rpc\Client\Protocol\Socket;
 
 /**
  * Janfish RPC client

@@ -3,6 +3,7 @@
 namespace Janfish\Rpc\Server;
 
 use Janfish\Rpc\Logger\File as FileLogger;
+use Janfish\Rpc\Server\Router\BatchDispatcher;
 use Janfish\Rpc\Server\Router\Dispatcher;
 
 /**
@@ -91,8 +92,19 @@ class Router
         if (!$this->req) {
             throw new Exception('Request data error 400');
         }
-        $this->dispatch = new Dispatcher($this->req);
+//        $this->req['timestamp'] = '123123123123';
+//        $this->req['signature'] = '4fe3f2640608a55d14f9630eb476a1cea6d9b9da';
+//        $this->req['batch'] = [
+//            ["call" => 'User\Profile::getById', 'args' => ["robert"]],
+//            ["call" => 'User\Profile::getById', 'args' => ["kille2r"]],
+//        ];
         $this->authorization = new Authorization($this->config);
+        if (isset($this->req['batch'])) {
+            $this->dispatch = new BatchDispatcher($this->req);
+        } else {
+            $this->dispatch = new Dispatcher($this->req);
+        }
+
     }
 
     /**
@@ -165,6 +177,7 @@ class Router
      */
     public function handle(): string
     {
+
         try {
             if ($this->authorization->check($this->req) === false) {
                 return $this->response([

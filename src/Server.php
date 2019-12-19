@@ -95,7 +95,7 @@ class Server
      */
     public static function stop(array $serverConfig, string $type = Tcp::PROTOCOL_NAME): bool
     {
-        return self::createServer($serverConfig['server'] ?? [], ucfirst($type))->stop();;
+        return self::createServer($serverConfig['server'] ?? [], ucfirst($type))->stop();
     }
 
     /**

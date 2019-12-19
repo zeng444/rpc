@@ -2,16 +2,17 @@
 
 namespace Services\User;
 
+use Janfish\Rpc\Server\Exception;
 use Services\BaseDemo;
 
 class Profile extends BaseDemo
 {
 
-    public function getById(int $id)
+    public function getById($str=''): string
     {
-        $sql = "SELECT id,realname from `consumer` WHERE id =:id limit 1";
-        $result = $this->db->query($sql, ['id' => $id]);
-        $result->setFetchMode(\Phalcon\Db::FETCH_ASSOC);
-        return $result->fetch();
+        if($str=="killer"){
+            throw new  Exception("这次SB了");
+        }
+        return "Hello World,$str";
     }
 }

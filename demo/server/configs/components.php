@@ -21,13 +21,7 @@ $di->setShared('env', function () use ($env) {
  * Sets the config
  */
 $di->setShared('config', function () use ($di) {
-    $env = $di->get('env');
-    if ($env === 'dev') {
-        $config = include ROOT_PATH."configs/dev.php";
-    } else {
-        $config = include ROOT_PATH."configs/config.php";
-    }
-    return $config;
+    return include ROOT_PATH."configs/config.php";
 });
 
 $config = $di->get('config');
@@ -48,7 +42,7 @@ $di->setShared('db', function () use ($config, $di) {
     $dbConfig = $config->database->toArray();
     $adapter = $dbConfig['adapter'];
     unset($dbConfig['adapter']);
-    $class = 'Janfish\\Phalcon\Db\\Adapter\\Pdo\\'.$adapter;
+    $class = 'Phalcon\Db\Adapter\Pdo\\'.$adapter;
     //    $class = '\\Core\\Coroutine\\Db\\Adapter\\Pdo\\Mysql';
     //    $class = '\\Core\\Coroutine\\Db\\Adapter\\Pdo\\'.$adapter;
     $db = new $class($dbConfig);
@@ -71,33 +65,4 @@ if (isset($config->redis) && isset($config->database) && $di->get('env') !== 'de
         $metadata = new MetaDataCache($redisConfig);
         return $metadata;
     };
-}
-
-
-/**
- * cache
- */
-if (isset($config->cache)) {
-    $di->set('cache', function () use ($config) {
-        $frontCache = new FrontData(["lifetime" => $config->cache->lifetime]);
-        return new BackendCache($frontCache, $config->cache->toArray());
-    });
-}
-
-
-/**
- * logger
- */
-if (isset($config->logger) && isset($config->logger->file)) {
-    $di->setShared('logger', function () use ($config) {
-        return new FileAdapter($config->logger->file);
-        /*$logger->critical("This is a critical message");
-        $logger->emergency("This is an emergency message");
-        $logger->debug("This is a debug message");
-        $logger->error("This is an error message");
-        $logger->info("This is an info message");
-        $logger->notice("This is a notice message");
-        $logger->warning("This is a warning message");
-        $logger->alert("This is an alert message");*/
-    });
 }
