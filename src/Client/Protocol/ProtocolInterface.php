@@ -5,10 +5,10 @@ namespace Janfish\Rpc\Client\Protocol;
 /**
  * Author:Robert
  *
- * Interface ClientInterface
+ * Interface ProtocolInterface
  * @package Janfish\Rpc\Client
  */
-interface ClientInterface
+interface ProtocolInterface
 {
 
     public function __construct(array $options = []);

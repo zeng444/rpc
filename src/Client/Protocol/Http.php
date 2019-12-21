@@ -2,6 +2,8 @@
 
 namespace Janfish\Rpc\Client\Protocol;
 
+use Janfish\Rpc\Client\Exception;
+
 /**
  * Janfish RPC client
  * Author:Robert
@@ -9,7 +11,7 @@ namespace Janfish\Rpc\Client\Protocol;
  * Class Client
  * @package Janfish\Rpc\Client
  */
-class Http implements ClientInterface
+class Http implements ProtocolInterface
 {
 
     /**

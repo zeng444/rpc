@@ -2,6 +2,8 @@
 
 namespace Janfish\Rpc\Client\Protocol;
 
+use Janfish\Rpc\Client\Exception;
+
 /**
  * Janfish RPC client
  * Author:Robert
@@ -9,7 +11,7 @@ namespace Janfish\Rpc\Client\Protocol;
  * Class Client
  * @package Janfish\Rpc\Client
  */
-class Socket implements ClientInterface
+class Socket implements ProtocolInterface
 {
 
     /**
@@ -61,7 +63,8 @@ class Socket implements ClientInterface
         }
     }
 
-    /***stream_socket_client
+    /**
+     * stream_socket_client
      * Author:Robert
      *
      * @param string $ctx

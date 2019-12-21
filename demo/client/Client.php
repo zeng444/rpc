@@ -1,29 +1,50 @@
 <?php
 
 use Janfish\Rpc\Client;
-use Janfish\Rpc\Client\Exception;
 
 include '../../vendor/autoload.php';
 $services = require_once 'configs/services.php';
 
 try {
+
+    //单次调用
     Client::init($services);
+    $data = Services\CallCenter\User\Profile::getById();
+    print_r($data.PHP_EOL);
 
-//    $caller = new Client\Caller($services);
-//    $caller->batch([
-//        [
-//            'class' => 'Services\CallCenter\User\Profile',
-//            'method' => 'getById',
-//            'args' => [],
-//        ],
-//        [
-//            'call' => 'Services\CallCenter\User\Profile',
-//            'args' => [],
-//        ],
-//    ]);
+    //单次调用
+    $clientBatch = new Client\Batch($services);
+    $data = $clientBatch->call([
+        'class' => 'Services\CallCenter\User\Profile',
+        'method' => 'getById',
+        'args' => ['1'],
+    ]);
+    //批量调用
+    $commands = [
+        "user1" => [
+            'class' => 'Services\CallCenter\User\Profile',
+            'method' => 'getById',
+            'args' => ['1'],
+        ],
+        "user2" => [
+            'class' => 'Services\Order\User\Profile',
+            'method' => 'getById',
+            'args' => [],
+        ],
+        "user3" => [
+            'class' => '\Services\CallCenter\User\Profile',
+            'method' => 'getById',
+            'args' => ['2'],
+        ],
+    ];
+    //显式调用
+    $clientBatch = new Client\Batch($services);
+    $data = $clientBatch->call($commands);
+    print_r($data);
+    //隐式调用
+    $data = Services\Client::call($commands);
+    print_r($data);
 
-        $data = Services\CallCenter\User\Profile::getById();
-        var_dump($data);
-} catch (Exception  $e) {
+} catch (\Exception  $e) {
     echo $e->getMessage();
 }

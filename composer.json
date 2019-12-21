@@ -12,11 +12,13 @@
   "require": {
     "php": ">=7.1.0",
     "ext-swoole": "*",
-    "ext-json": "*"
+    "ext-seaslog": "*",
+    "ext-json": "*",
+    "ext-curl": "*"
   },
   "autoload": {
     "psr-4": {
-      "Janfish\\Rpc\\":"src/"
+      "Janfish\\Rpc\\": "src/"
     }
   }
 }

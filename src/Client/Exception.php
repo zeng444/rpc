@@ -1,6 +1,6 @@
 <?php
 
-namespace Janfish\Rpc\Client\Protocol;
+namespace Janfish\Rpc\Client;
 
 /**
  * Author:Robert
