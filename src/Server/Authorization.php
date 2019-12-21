@@ -16,6 +16,13 @@ class Authorization
     protected $appId;
 
     /**
+     * Author:Robert
+     *
+     * @var mixed
+     */
+    protected $service;
+
+    /**
      *
      * @var
      */
@@ -46,6 +53,9 @@ class Authorization
         if (isset($options['secret'])) {
             $this->appSecret = $options['secret'];
         }
+        if (isset($options['name'])) {
+            $this->service = $options['name'];
+        }
         if (isset($options['signType'])) {
             $this->signType = $options['signType'];
         }
@@ -71,7 +81,7 @@ class Authorization
         if (isset($data['batch'])) {
             $data['call'] = implode(',', array_column($data['batch'], 'call'));
         }
-        $signature = $signType(sprintf('appId=%s&algorithm=%s&call=%s&secret=%s&service=%s&timestamp=%s', $this->appId, $signType, $data['call'], $this->appSecret, $data['service'], $data['timestamp']));
+        $signature = $signType(sprintf('appId=%s&algorithm=%s&call=%s&secret=%s&service=%s&timestamp=%s', $this->appId, $signType, $data['call'], $this->appSecret, $this->service, $data['timestamp']));
         return $signature === $data['signature'];
     }
 }

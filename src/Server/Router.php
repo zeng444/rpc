@@ -22,6 +22,13 @@ class Router
     protected $appId;
 
     /**
+     * Author:Robert
+     *
+     * @var mixed
+     */
+    protected $service;
+
+    /**
      *
      * @var
      */
@@ -75,11 +82,17 @@ class Router
     public function __construct(array $options, string $req, string $logPath = '')
     {
         $this->config = $options;
+        if (isset($options['name'])) {
+            $this->service = $options['name'];
+        }
         if (isset($options['id'])) {
             $this->appId = $options['id'];
         }
         if (isset($options['secret'])) {
             $this->appSecret = $options['secret'];
+        }
+        if (!$this->service) {
+            throw new Exception('Your service has no name');
         }
         if (!$this->appId || !$this->appSecret) {
             throw new Exception('Request params error 401');
@@ -92,12 +105,12 @@ class Router
         if (!$this->req) {
             throw new Exception('Request data error 400');
         }
-//        $this->req['timestamp'] = '123123123123';
-//        $this->req['signature'] = '4fe3f2640608a55d14f9630eb476a1cea6d9b9da';
-//        $this->req['batch'] = [
-//            ["call" => 'User\Profile::getById', 'args' => ["robert"]],
-//            ["call" => 'User\Profile::getById', 'args' => ["kille2r"]],
-//        ];
+        //        $this->req['timestamp'] = '123123123123';
+        //        $this->req['signature'] = '4fe3f2640608a55d14f9630eb476a1cea6d9b9da';
+        //        $this->req['batch'] = [
+        //            ["call" => 'User\Profile::getById', 'args' => ["robert"]],
+        //            ["call" => 'User\Profile::getById', 'args' => ["kille2r"]],
+        //        ];
         $this->authorization = new Authorization($this->config);
         if (isset($this->req['batch'])) {
             $this->dispatch = new BatchDispatcher($this->req);

@@ -28,7 +28,7 @@ try {
             'args' => ['1'],
         ],
         "user2" => [
-            'class' => 'Services\Order\User\Profile',
+            'class' => 'Services\CallCenter\User\Profile',
             'method' => 'getById',
             'args' => [],
         ],
