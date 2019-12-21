@@ -19,6 +19,7 @@ try {
         'method' => 'getById',
         'args' => ['1'],
     ]);
+    print_r($data.PHP_EOL);
     //批量调用
     $commands = [
         "user1" => [

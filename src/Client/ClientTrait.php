@@ -47,9 +47,9 @@ trait ClientTrait
      * @param string $signType
      * @return mixed
      */
-    protected function signature($appId, $appSecret, $service, $call, $timestamp, $signType = 'sha1')
+    protected function signature(string $appId, string $appSecret, string $service, string $call, string $timestamp, string $signType = 'sha1'): string
     {
-        ////sort by dict
+        //sort by dict
         return $signType(sprintf('appId=%s&algorithm=%s&call=%s&secret=%s&service=%s&timestamp=%s', $appId, $signType, $call, $appSecret, $service, $timestamp));
     }
 
