@@ -47,6 +47,20 @@ abstract class Adapter
      *
      * @var
      */
+    protected $task;
+
+    /**
+     * Author:Robert
+     *
+     * @var
+     */
+    protected $finish;
+
+    /**
+     * Author:Robert
+     *
+     * @var
+     */
     protected $server;
 
     /**
@@ -186,9 +200,30 @@ abstract class Adapter
     /**
      * Author:Robert
      *
+     * @param $call
+     */
+    public function registerTask($call): void
+    {
+        $this->task = $call;
+    }
+
+
+    /**
+     * Author:Robert
+     *
+     * @param $call
+     */
+    public function registerFinish($call): void
+    {
+        $this->finish = $call;
+    }
+
+    /**
+     * Author:Robert
+     *
      * @param $bootstrap
      */
-    public function registerBoostrap($bootstrap): void
+    public function registerBootstrap($bootstrap): void
     {
         $this->bootstrap = $bootstrap;
     }
@@ -201,11 +236,28 @@ abstract class Adapter
     public function runBootstrap()
     {
         $bootstrapCallback = $this->bootstrap;
+        $finishCallback = $this->finish;
+        $taskCallback = $this->task;
         if (is_callable($bootstrapCallback)) {
             $this->event('workerstart', function ($server) use ($bootstrapCallback) {
                 $bootstrapCallback($server);
             });
         }
+        //todo 注册任务
+        if (is_callable($taskCallback)) {
+            $this->event('task', function (SwooleServer $server, $taskId, $fromId, $data) use ($taskCallback) {
+                echo "#{$server->worker_id}\tonTask: [PID={$server->worker_pid}]: task_id=$taskId, data_len=".strlen($data).".".PHP_EOL;
+                $taskCallback($server, $data);
+                $server->finish($data);
+            });
+        }
+        if (is_callable($finishCallback)) {
+            $this->event('finish', function (SwooleServer $server, $task_id, $data) use ($finishCallback) {
+                echo "Task#$task_id finished, data_len=".strlen($data).PHP_EOL;
+                $finishCallback($server, $data);
+            });
+        }
+
     }
 
 }

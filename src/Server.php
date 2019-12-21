@@ -51,6 +51,7 @@ class Server
      */
     public static function start(array $config, array $serviceConfigs = [], string $type = Tcp::PROTOCOL_NAME, $initCallback = ''): bool
     {
+
         \Swoole\Coroutine::set([
             'max_coroutine' => self::MAX_COROUTINE,
         ]);
@@ -64,11 +65,12 @@ class Server
             $options = array_merge(self::defaultOptions(), $config['options']);
         }
         $server->set($options);
-        $server->registerBoostrap(function () use ($initCallback, $server) {
+        $server->registerBootstrap(function () use ($initCallback, $server) {
             if (is_callable($initCallback)) {
                 $initCallback($server);
             }
         });
+
         $server->registerRequest(function ($req) use ($serverConfig, $serviceConfigs) {
             $router = new Server\Router($serviceConfigs, $req, $serverConfig['log_file'] ?? '');
             $router->afterFindOutService(function ($service) {
@@ -82,6 +84,17 @@ class Server
             });
             return $router->handle();
         });
+        //TODO 注册任务
+        if (isset($options['task_worker_num']) && $options['task_worker_num']) {
+            $server->registerTask(function ($server, $data) {
+                list($class, $method, $args) = $data;
+                $instance = new $class();
+                $instance->$method(...$args);
+            });
+            $server->registerFinish(function ($server, $data) {
+               //TODO
+            });
+        }
         return $server->start();
     }
 
