@@ -21,11 +21,7 @@ $data = $clientBatch->call([
 print_r($data.PHP_EOL);
 //批量调用
 $commands = [
-    "user1" => [
-        'class' => 'Services\CallCenter\User\Profile',
-        'method' => 'getById',
-        'args' => ['1'],
-    ],
+    "user1" => ['Services\CallCenter\User\Profile', 'getById', ['嘟嘟'],],
     "user2" => [
         'class' => 'Services\CallCenter\User\Profile',
         'method' => 'getById',
