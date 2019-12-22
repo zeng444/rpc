@@ -13,6 +13,7 @@ return [
     ],
     'options' => [
         'task_worker_num' => 2,
+        'task_max_request' => 2000,
         'daemonize' => 0,
         'reactor_num' => 2,
         'worker_num' => 2,
