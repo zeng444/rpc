@@ -12,6 +12,7 @@ use Janfish\Rpc\Server\Protocol\Adapter;
  *
  * Class Async
  * @package Janfish\Rpc\Server\Task
+ * @method static call(string $class, string $method, array $args)
  */
 class Async
 {
@@ -62,7 +63,10 @@ class Async
         if (isset($options['task_log_file'])) {
             $this->logFile = $options['task_log_file'];
         }
-        $this->logger = new Logger(['logPath' => $this->logFile]);
+        if ($this->logFile) {
+            $this->logger = new Logger(['logPath' => $this->logFile]);
+        }
+
     }
 
     /**
@@ -93,7 +97,7 @@ class Async
     public static function __callStatic($methodName, array $args)
     {
         $instance = self::getInstance();
-        if ($methodName === 'async') {
+        if ($methodName === 'call') {
             return $instance->task(...$args);
         }
         return $instance->$methodName(...$args);

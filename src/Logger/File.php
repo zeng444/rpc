@@ -53,9 +53,7 @@ class File
             throw new Exception(' 日志文件不存在');
         }
         $this->folder = $folder;
-        SeasLog::setLogger($this->folder);
         SeasLog::setBasePath($path);
-
     }
 
 
