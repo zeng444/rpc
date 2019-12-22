@@ -2,7 +2,6 @@
 
 namespace Janfish\Rpc\Logger;
 
-use Janfish\Rpc\Server\Exception;
 use SeasLog;
 
 /**
@@ -30,6 +29,13 @@ class File
     public $logPath;
 
     /**
+     * Author:Robert
+     *
+     * @var
+     */
+    public $folder;
+
+    /**
      * Logger constructor.
      * @param array $config
      * @throws Exception
@@ -40,13 +46,18 @@ class File
         if (isset($config['logPath'])) {
             $this->logPath = $config['logPath'];
         }
-        if (!$this->logPath || !is_readable($this->logPath)) {
+        $path = explode('/', $this->logPath);
+        $folder = current(array_splice($path, -1));
+        $path = implode('/', $path);
+        if (!$path || !is_readable($path)) {
             throw new Exception(' 日志文件不存在');
         }
-        SeasLog::setLogger('janfish.rpc');
-        SeasLog::setBasePath($this->logPath);
-        SeasLog::setDatetimeFormat('Y-m-d H:i:s');
+        $this->folder = $folder;
+        SeasLog::setLogger($this->folder);
+        SeasLog::setBasePath($path);
+
     }
+
 
     /**
      * Author:Robert
@@ -57,6 +68,8 @@ class File
      */
     public function write(string $msg, string $level = SEASLOG_DEBUG): bool
     {
+        SeasLog::setDatetimeFormat('Y-m-d H:i:s');
+        SeasLog::setLogger($this->folder);
         return SeasLog::log($level, $msg);
     }
 

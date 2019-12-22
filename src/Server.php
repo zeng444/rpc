@@ -65,12 +65,20 @@ class Server
             $options = array_merge(self::defaultOptions(), $config['options']);
         }
         $server->set($options);
+        //注册服务启动
         $server->registerBootstrap(function () use ($initCallback, $server) {
             if (is_callable($initCallback)) {
                 $initCallback($server);
             }
         });
+        //注册异步任务
+        $task = Server\Task\Async::getInstance($server, [
+            'task_worker_num' => $config['options']['task_worker_num'] ?? 0,
+            'task_log_file' => $config['server']['task_log_file'] ?? '',
+        ]);
+        $task->handle();
 
+        //注册数据包接收
         $server->registerRequest(function ($req) use ($serverConfig, $serviceConfigs) {
             $router = new Server\Router($serviceConfigs, $req, $serverConfig['log_file'] ?? '');
             $router->afterFindOutService(function ($service) {
@@ -84,17 +92,7 @@ class Server
             });
             return $router->handle();
         });
-        //TODO 注册任务
-        if (isset($options['task_worker_num']) && $options['task_worker_num']) {
-            $server->registerTask(function ($server, $data) {
-                list($class, $method, $args) = $data;
-                $instance = new $class();
-                $instance->$method(...$args);
-            });
-            $server->registerFinish(function ($server, $data) {
-               //TODO
-            });
-        }
+
         return $server->start();
     }
 

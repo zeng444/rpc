@@ -15,7 +15,7 @@ use Phalcon\DiInterface;
  *
  * @property  \Phalcon\Db\Adapter $db
  */
-abstract class BaseDemo implements InjectionAwareInterface,ServiceInterface
+abstract class BaseDemo implements InjectionAwareInterface, ServiceInterface
 {
 
     /**
@@ -33,7 +33,6 @@ abstract class BaseDemo implements InjectionAwareInterface,ServiceInterface
     protected $db;
 
 
-
     /**
      * Base constructor.
      */
@@ -49,6 +48,7 @@ abstract class BaseDemo implements InjectionAwareInterface,ServiceInterface
      */
     public function init()
     {
+        //       echo $server->async(json_encode(['\Services\User\Profile', 'test', ["why"]]),true);
     }
 
 

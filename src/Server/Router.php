@@ -61,9 +61,7 @@ class Router
      */
     public $dispatch;
 
-    /**
-     * @var
-     */
+
     public static $logger;
 
     /**
@@ -78,6 +76,7 @@ class Router
      * @param string $req
      * @param string $logPath
      * @throws Exception
+     * @throws \Janfish\Rpc\Logger\Exception
      */
     public function __construct(array $options, string $req, string $logPath = '')
     {
@@ -105,26 +104,19 @@ class Router
         if (!$this->req) {
             throw new Exception('Request data error 400');
         }
-        //        $this->req['timestamp'] = '123123123123';
-        //        $this->req['signature'] = '4fe3f2640608a55d14f9630eb476a1cea6d9b9da';
-        //        $this->req['batch'] = [
-        //            ["call" => 'User\Profile::getById', 'args' => ["robert"]],
-        //            ["call" => 'User\Profile::getById', 'args' => ["kille2r"]],
-        //        ];
         $this->authorization = new Authorization($this->config);
         if (isset($this->req['batch'])) {
             $this->dispatch = new BatchDispatcher($this->req);
         } else {
             $this->dispatch = new Dispatcher($this->req);
         }
-
     }
 
     /**
      * Author:Robert
      *
      * @param string $msg
-     * @throws Exception
+     * @throws \Janfish\Rpc\Logger\Exception
      */
     public function writeLog(string $msg): void
     {
@@ -132,7 +124,7 @@ class Router
             if (!self::$logger) {
                 self::$logger = new FileLogger(['logPath' => $this->logPath]);
             }
-            (self::$logger)->debug($msg);
+            self::$logger->debug($msg);
         }
     }
 
@@ -142,7 +134,7 @@ class Router
      * @param array $data
      * @param string $endChar
      * @return string
-     * @throws Exception
+     * @throws \Janfish\Rpc\Logger\Exception
      */
     public function response(array $data, string $endChar = self::RPC_EOL): string
     {
@@ -186,11 +178,10 @@ class Router
      * Author:Robert
      *
      * @return string
-     * @throws Exception
+     * @throws \Janfish\Rpc\Logger\Exception
      */
     public function handle(): string
     {
-
         try {
             if ($this->authorization->check($this->req) === false) {
                 return $this->response([
