@@ -44,19 +44,19 @@ class Server
      *
      * @param array $config
      * @param array $serviceConfigs
-     * @param string $server
+     * @param string $protocol
      * @param string $initCallback
      * @return bool
      * @throws Exception
      * @throws Logger\Exception
      */
-    public static function start(array $config, array $serviceConfigs = [], string $server = Tcp::PROTOCOL_NAME, $initCallback = ''): bool
+    public static function start(array $config, array $serviceConfigs = [], string $protocol = Tcp::PROTOCOL_NAME, $initCallback = ''): bool
     {
         \Swoole\Coroutine::set([
             'max_coroutine' => self::MAX_COROUTINE,
         ]);
         $serverConfig = $config['server'] ?? [];
-        $server = self::createServer($serverConfig, ucfirst($server));
+        $server = self::createServer($serverConfig, ucfirst($protocol));
         if (!call_user_func([$server, 'create'])) {
             return false;
         }
@@ -99,26 +99,26 @@ class Server
      * Author:Robert
      *
      * @param array $serverConfig
-     * @param string $server
+     * @param string $protocol
      * @return bool
      * @throws Exception
      */
-    public static function stop(array $serverConfig, string $server = Tcp::PROTOCOL_NAME): bool
+    public static function stop(array $serverConfig, string $protocol = Tcp::PROTOCOL_NAME): bool
     {
-        return self::createServer($serverConfig['server'] ?? [], ucfirst($server))->stop();
+        return self::createServer($serverConfig['server'] ?? [], ucfirst($protocol))->stop();
     }
 
     /**
      * Author:Robert
      *
      * @param array $serverConfig
-     * @param string $server
+     * @param string $protocol
      * @return bool
      * @throws Exception
      */
-    public static function reload(array $serverConfig, string $server = Tcp::PROTOCOL_NAME): bool
+    public static function reload(array $serverConfig, string $protocol = Tcp::PROTOCOL_NAME): bool
     {
-        return (self::createServer($serverConfig['server'] ?? [], ucfirst($server)))->reload();
+        return (self::createServer($serverConfig['server'] ?? [], ucfirst($protocol)))->reload();
     }
 
 
@@ -127,43 +127,44 @@ class Server
      *
      * @param array $serverConfig
      * @param array $serviceConfigs
-     * @param string $server
+     * @param string $protocol
+     * @param string $initCallback
      * @return bool
      * @throws Exception
      * @throws Logger\Exception
      */
-    public static function restart(array $serverConfig, array $serviceConfigs = [], string $server = Tcp::PROTOCOL_NAME): bool
+    public static function restart(array $serverConfig, array $serviceConfigs = [], string $protocol = Tcp::PROTOCOL_NAME, $initCallback = ''): bool
     {
-        $server = ucfirst($server);
+        $server = ucfirst($protocol);
         if (!(self::stop($serverConfig, $server))) {
             return false;
         }
         sleep(self::RESTART_SLEEP_TIME);
-        return self::start($serverConfig, $serviceConfigs, $server);
+        return self::start($serverConfig, $serviceConfigs, $server, $initCallback);
     }
 
     /**
      * Author:Robert
      *
-     * @param string $server
+     * @param string $protocol
      * @return mixed
      */
-    public static function getServer(string $server = Tcp::PROTOCOL_NAME)
+    public static function getServer(string $protocol = Tcp::PROTOCOL_NAME)
     {
-        return ('Janfish\\Rpc\\Server\\Protocol\\'.ucfirst($server))::getServer();
+        return ('Janfish\\Rpc\\Server\\Protocol\\'.ucfirst($protocol))::getServer();
     }
 
     /**
      * Author:Robert
      *
      * @param array $serverConfig
-     * @param string $server
+     * @param string $protocol
      * @return mixed
      * @throws Exception
      */
-    private static function createServer(array $serverConfig, string $server = Tcp::PROTOCOL_NAME)
+    private static function createServer(array $serverConfig, string $protocol = Tcp::PROTOCOL_NAME)
     {
-        $server = 'Janfish\\Rpc\\Server\\Protocol\\'.$server;
+        $server = 'Janfish\\Rpc\\Server\\Protocol\\'.$protocol;
         if (!class_exists($server)) {
             throw  new Exception('不存在的服务器协议');
         }
