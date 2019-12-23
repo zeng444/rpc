@@ -27,6 +27,13 @@ class Server
     /**
      * Author:Robert
      *
+     * @var
+     */
+    private static $protocol;
+
+    /**
+     * Author:Robert
+     *
      * @return array
      */
     public static function defaultOptions(): array
@@ -56,7 +63,8 @@ class Server
             'max_coroutine' => self::MAX_COROUTINE,
         ]);
         $serverConfig = $config['server'] ?? [];
-        $server = self::createServer($serverConfig, ucfirst($protocol));
+        $protocol = self::$protocol = ucfirst($protocol);
+        $server = self::createServer($serverConfig, $protocol);
         if (!call_user_func([$server, 'create'])) {
             return false;
         }
@@ -77,7 +85,6 @@ class Server
             'task_log_file' => $config['server']['task_log_file'] ?? '',
         ]);
         $task->handle();
-
         //注册数据包接收
         $server->registerRequest(function ($req) use ($serverConfig, $serviceConfigs) {
             $router = new Server\Router($serviceConfigs, $req, $serverConfig['log_file'] ?? '');
@@ -149,9 +156,9 @@ class Server
      * @param string $protocol
      * @return mixed
      */
-    public static function getServer(string $protocol = Tcp::PROTOCOL_NAME)
+    public static function getServer(string $protocol = null)
     {
-        return ('Janfish\\Rpc\\Server\\Protocol\\'.ucfirst($protocol))::getServer();
+        return ('Janfish\\Rpc\\Server\\Protocol\\'.ucfirst($protocol ?: self::$protocol))::getServer();
     }
 
     /**

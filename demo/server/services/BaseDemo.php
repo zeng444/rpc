@@ -49,7 +49,7 @@ abstract class BaseDemo implements InjectionAwareInterface, ServiceInterface
      */
     public function init()
     {
-        (Server::getServer('tcp'))->reload();
+        (Server::getServer())->reload();
         //       echo $server->async(json_encode(['\Services\User\Profile', 'test', ["why"]]),true);
     }
 
