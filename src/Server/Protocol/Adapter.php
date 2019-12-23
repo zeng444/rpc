@@ -56,16 +56,35 @@ abstract class Adapter
      */
     abstract function start(): bool;
 
+    /**
+     * Author:Robert
+     *
+     * @var
+     */
+    private static $instance;
+
+
+    /**
+     * Adapter constructor.
+     * @param array $options
+     */
+    abstract function __construct(array $options = []);
 
     /**
      * Author:Robert
      *
-     * @return mixed|SwooleServer
+     * @param array $options
+     * @return mixed
      */
-    public function getServer()
+    public static function getServer(array $options = [])
     {
-        return $this->server;
+        if (!self::$instance) {
+            $className = get_called_class();
+            self::$instance = new $className($options);
+        }
+        return self::$instance;
     }
+
 
     /**
      * Author:Robert
@@ -224,5 +243,6 @@ abstract class Adapter
             });
         }
     }
+
 
 }

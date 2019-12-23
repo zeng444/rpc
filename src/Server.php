@@ -44,19 +44,19 @@ class Server
      *
      * @param array $config
      * @param array $serviceConfigs
-     * @param string $type
-     * @param $initCallback
+     * @param string $server
+     * @param string $initCallback
      * @return bool
      * @throws Exception
+     * @throws Logger\Exception
      */
-    public static function start(array $config, array $serviceConfigs = [], string $type = Tcp::PROTOCOL_NAME, $initCallback = ''): bool
+    public static function start(array $config, array $serviceConfigs = [], string $server = Tcp::PROTOCOL_NAME, $initCallback = ''): bool
     {
-
         \Swoole\Coroutine::set([
             'max_coroutine' => self::MAX_COROUTINE,
         ]);
         $serverConfig = $config['server'] ?? [];
-        $server = self::createServer($serverConfig, ucfirst($type));
+        $server = self::createServer($serverConfig, ucfirst($server));
         if (!call_user_func([$server, 'create'])) {
             return false;
         }
@@ -92,7 +92,6 @@ class Server
             });
             return $router->handle();
         });
-
         return $server->start();
     }
 
@@ -100,26 +99,26 @@ class Server
      * Author:Robert
      *
      * @param array $serverConfig
-     * @param string $type
+     * @param string $server
      * @return bool
      * @throws Exception
      */
-    public static function stop(array $serverConfig, string $type = Tcp::PROTOCOL_NAME): bool
+    public static function stop(array $serverConfig, string $server = Tcp::PROTOCOL_NAME): bool
     {
-        return self::createServer($serverConfig['server'] ?? [], ucfirst($type))->stop();
+        return self::createServer($serverConfig['server'] ?? [], ucfirst($server))->stop();
     }
 
     /**
      * Author:Robert
      *
      * @param array $serverConfig
-     * @param string $type
+     * @param string $server
      * @return bool
      * @throws Exception
      */
-    public static function reload(array $serverConfig, string $type = Tcp::PROTOCOL_NAME): bool
+    public static function reload(array $serverConfig, string $server = Tcp::PROTOCOL_NAME): bool
     {
-        return (self::createServer($serverConfig['server'] ?? [], ucfirst($type)))->reload();
+        return (self::createServer($serverConfig['server'] ?? [], ucfirst($server)))->reload();
     }
 
 
@@ -128,35 +127,47 @@ class Server
      *
      * @param array $serverConfig
      * @param array $serviceConfigs
-     * @param string $type
+     * @param string $server
      * @return bool
      * @throws Exception
+     * @throws Logger\Exception
      */
-    public static function restart(array $serverConfig, array $serviceConfigs = [], string $type = Tcp::PROTOCOL_NAME): bool
+    public static function restart(array $serverConfig, array $serviceConfigs = [], string $server = Tcp::PROTOCOL_NAME): bool
     {
-        $type = ucfirst($type);
-        if (!(self::stop($serverConfig, $type))) {
+        $server = ucfirst($server);
+        if (!(self::stop($serverConfig, $server))) {
             return false;
         }
         sleep(self::RESTART_SLEEP_TIME);
-        return self::start($serverConfig, $serviceConfigs, $type);
+        return self::start($serverConfig, $serviceConfigs, $server);
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @param string $server
+     * @return mixed
+     */
+    public static function getServer(string $server = Tcp::PROTOCOL_NAME)
+    {
+        return $server::getServer();
     }
 
     /**
      * Author:Robert
      *
      * @param array $serverConfig
-     * @param string $type
-     * @return bool|Server\Protocol\Tcp
+     * @param string $server
+     * @return mixed
      * @throws Exception
      */
-    private static function createServer(array $serverConfig, string $type = Tcp::PROTOCOL_NAME)
+    private static function createServer(array $serverConfig, string $server = Tcp::PROTOCOL_NAME)
     {
-        $type = 'Janfish\\Rpc\\Server\\Protocol\\'.$type;
-        if (!class_exists($type)) {
+        $server = 'Janfish\\Rpc\\Server\\Protocol\\'.$server;
+        if (!class_exists($server)) {
             throw  new Exception('不存在的服务器协议');
         }
-        $server = new $type($serverConfig);
+        $server = $server::getServer($serverConfig);
         if (!is_subclass_of($server, 'Janfish\\Rpc\\Server\\Protocol\\Adapter')) {
             throw  new Exception('所属服务器协议不合法');
         }

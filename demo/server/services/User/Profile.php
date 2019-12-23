@@ -3,6 +3,7 @@
 namespace Services\User;
 
 use Janfish\Rpc\Server\Exception;
+use Janfish\Rpc\Server\Protocol\Tcp;
 use Services\BaseDemo;
 use Janfish\Rpc\Server\Task\Async;
 
@@ -15,6 +16,7 @@ class Profile extends BaseDemo
         if ($str == "killer") {
             throw new  Exception("这次SB了");
         }
+        (Tcp::getServer())->reload();
         return "Hello World,$str";
     }
 

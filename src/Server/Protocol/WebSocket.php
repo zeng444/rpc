@@ -50,7 +50,7 @@ class WebSocket extends Adapter
      * WebSocket constructor.
      * @param array $option
      */
-    public function __construct($option = [])
+    public function __construct(array $option = [])
     {
         if (isset($option['host'])) {
             $this->host = $option['host'];

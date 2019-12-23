@@ -62,7 +62,7 @@ class Tcp extends Adapter
      * @param array $option
      * @param int $mode
      */
-    public function __construct($option = [], int $mode = SWOOLE_PROCESS)
+    public function __construct(array $option = [], int $mode = SWOOLE_PROCESS)
     {
         if (isset($option['host'])) {
             $this->host = $option['host'];
