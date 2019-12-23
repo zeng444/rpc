@@ -150,7 +150,7 @@ class Server
      */
     public static function getServer(string $server = Tcp::PROTOCOL_NAME)
     {
-        return $server::getServer();
+        return ('Janfish\\Rpc\\Server\\Protocol\\'.ucfirst($server))::getServer();
     }
 
     /**

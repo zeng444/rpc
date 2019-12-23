@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Janfish\Rpc\Server;
 use Janfish\Rpc\Server\Service\ServiceInterface;
 use Phalcon\Di;
 use Phalcon\DI\InjectionAwareInterface;
@@ -48,6 +49,7 @@ abstract class BaseDemo implements InjectionAwareInterface, ServiceInterface
      */
     public function init()
     {
+        (Server::getServer('tcp'))->reload();
         //       echo $server->async(json_encode(['\Services\User\Profile', 'test', ["why"]]),true);
     }
 
