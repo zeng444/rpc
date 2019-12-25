@@ -118,6 +118,7 @@ abstract class Adapter
         $this->server->set($setting);
     }
 
+
     /**
      * Author:Robert
      *
@@ -130,6 +131,89 @@ abstract class Adapter
         }
         return \Swoole\Process::kill($pid, SIGUSR1);
     }
+
+    /**
+     * Author:Robert
+     *
+     * @return bool
+     */
+    public function isTaskWorker(): bool
+    {
+        return $this->server->taskworker;
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @return int
+     */
+    public function getWorkerPid(): int
+    {
+        return $this->server->worker_pid;
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @return int
+     */
+    public function getWorkerId(): int
+    {
+        return $this->server->worker_id;
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @return int
+     */
+    public function getManagerPid(): int
+    {
+        return $this->server->manager_pid;
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @return int
+     */
+    public function getMasterPid(): int
+    {
+        return $this->server->master_pid;
+    }
+
+
+    /**
+     * Author:Robert
+     *
+     * @return array
+     */
+    public function getSetting(): array
+    {
+        return $this->server->setting;
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @return array
+     */
+    public function getPorts()
+    {
+        return $this->server->ports;
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @return array
+     */
+    public function getConnections()
+    {
+        return $this->server->connections;
+    }
+
+
 
     /**
      * Author:Robert
