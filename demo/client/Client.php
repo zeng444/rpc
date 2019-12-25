@@ -5,6 +5,7 @@ use Janfish\Rpc\Client;
 include '../../vendor/autoload.php';
 $services = require_once 'configs/services.php';
 
+Client::init($services);
 //单次调用
 
 $data = Services\CallCenter\User\Profile::getById();
