@@ -11,7 +11,7 @@ class Profile extends BaseDemo
 
     public function getById($str = ''): string
     {
-        Async::call('\Services\User\Profile', 'test', ["why"]);
+//        Async::call('\Services\User\Profile', 'test', ["why"]);
         if ($str == "killer") {
             throw new  Exception("这次SB了");
         }

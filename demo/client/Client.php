@@ -40,3 +40,7 @@ print_r($data);
 $data = Services\Client::call($commands);
 print_r($data);
 
+//异步调用
+$data = Services\CallCenter\User\Profile::AsyncGetById();
+print_r($data.PHP_EOL);
+

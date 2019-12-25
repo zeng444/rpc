@@ -4,6 +4,7 @@ namespace Janfish\Rpc\Server\Router;
 
 use Janfish\Rpc\Server\Exception;
 use Janfish\Rpc\Server\Service\ServiceInterface;
+use Janfish\Rpc\Server\Task\Async;
 
 /**
  * Author:Robert
@@ -17,7 +18,6 @@ class Dispatcher
      * @var array
      */
     protected $config;
-
 
 
     /**
@@ -39,6 +39,11 @@ class Dispatcher
      * @var
      */
     protected $afterInstanced;
+
+    /**
+     *
+     */
+    const ASYNC_CALL_PREFIX = 'Async';
 
 
     /**
@@ -91,21 +96,59 @@ class Dispatcher
             $called = ($this->afterFindOut)($called);
         }
         list($className, $methodName) = $called;
-
         if (!$className || !class_exists($className)) {
             throw new Exception(sprintf('class %s not exist', $className));
         }
+        if (!method_exists($className, $methodName)) {
+            return $this->asyncCall($className, $methodName, $this->getArg());
+        }
+        return $this->call($className, $methodName, $this->getArg());
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @param string $className
+     * @param string $methodName
+     * @param array $args
+     * @return mixed
+     * @throws Exception
+     */
+    protected function asyncCall(string $className, string $methodName, array $args)
+    {
         $instance = new $className();
         if (!$instance instanceof ServiceInterface) {
             throw new Exception(sprintf('class %s not exist', $className));
         }
+        if (strpos($methodName, self::ASYNC_CALL_PREFIX) !== 0) {
+            throw new Exception(sprintf('method %s::%s not exist', $className, $methodName));
+        }
+        $methodName = lcfirst(substr($methodName, strlen(self::ASYNC_CALL_PREFIX)));
         if (!method_exists($instance, $methodName)) {
             throw new Exception(sprintf('method %s::%s not exist', $className, $methodName));
+        }
+        return Async::call($className, $methodName, $args);
+    }
+
+    /**
+     * Author:Robert
+     *
+     * @param string $className
+     * @param string $methodName
+     * @param array $args
+     * @return mixed
+     * @throws Exception
+     */
+    protected function call(string $className, string $methodName, array $args)
+    {
+        $instance = new $className();
+        if (!$instance instanceof ServiceInterface) {
+            throw new Exception(sprintf('class %s not exist', $className));
         }
         if ($this->afterInstanced) {
             ($this->afterInstanced)($instance);
         }
-        return call_user_func_array([$instance, $methodName], $this->getArg());
+        return call_user_func_array([$instance, $methodName], $args);
     }
 
     /**
