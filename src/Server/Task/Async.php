@@ -162,7 +162,7 @@ class Async
         });
         $logger = $this->logger;
         $this->server->event('finish', function (\Swoole\Server $server, $taskId, $data) use ($logger) {
-            $msg = "Task#$taskId finished, data_len=".strlen($data).', '.json_encode($data);
+            $msg = "Task#$taskId finished, ".json_encode($data);
             if ($logger) {
                 $logger->debug($msg);
             } else {
