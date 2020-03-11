@@ -2,6 +2,8 @@
 
 namespace Janfish\Rpc\Server\Protocol;
 
+use Janfish\Rpc\Server\Exception;
+
 /**
  * Author:Robert
  *
@@ -317,9 +319,13 @@ abstract class Adapter
     /**
      * Author:Robert
      *
+     * @throws Exception
      */
     public function runBootstrap()
     {
+        if ($this->pidFile && !is_writable(dirname($this->pidFile))) {
+            throw new Exception('Pid File '.$this->pidFile.' can\'t create');
+        }
         $bootstrapCallback = $this->bootstrap;
         if (is_callable($bootstrapCallback)) {
             $this->event('workerstart', function ($server) use ($bootstrapCallback) {

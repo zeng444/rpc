@@ -82,9 +82,9 @@ class Http extends Adapter
      */
     public function create(): bool
     {
-        if ($this->isRunning()) {
-            return false;
-        }
+//        if ($this->isRunning()) {
+//            return false;
+//        }
         $this->server = new SwooleServer($this->host, $this->port);
         return true;
     }

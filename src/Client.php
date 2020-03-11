@@ -94,11 +94,7 @@ class Client
         if (!isset($config['id']) || !isset($config['secret']) || !isset($config['host'])) {
             throw new Exception('Config error');
         }
-        $ctx = $this->make($this->serviceName, $methodName, $args, $config['id'], $config['secret'], $config['signType'] ?? 'sha1');
-        if (!$ctx) {
-            throw new Exception('Data signature failed');
-        }
-        return $this->parse((self::getClient($config))->remoteCall($ctx));
+        return $this->parse((self::getClient($config))->remoteCall($this->make($this->serviceName, $methodName, $args, $config['id'], $config['secret'], $config['signType'] ?? 'sha1')));
     }
 
     /**
