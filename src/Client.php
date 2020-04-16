@@ -19,27 +19,34 @@ class Client
     /**
      * @var
      */
+    protected static $config;
+    /**
+     * @var
+     */
+    protected static $servicePrefix;
+    /**
+     *
+     */
+    protected static $clientName = 'Client';
+    /**
+     * @var
+     */
     protected $serviceName;
-
     /**
      * @var string
      */
     protected $className;
 
     /**
-     * @var
+     * Http constructor.
      */
-    protected static $config;
-
-    /**
-     * @var
-     */
-    protected static $servicePrefix;
-
-    /**
-     *
-     */
-    protected static $clientName = 'Client';
+    public function __construct()
+    {
+        $className = get_class($this);
+        $guess = explode('\\', preg_replace('/^'.preg_quote(self::$servicePrefix).'/', '', $className));
+        $this->serviceName = $guess[0];
+        $this->className = implode('\\', array_slice($guess, 1));
+    }
 
     /**
      * initialize Rpc client
@@ -66,17 +73,6 @@ class Client
     }
 
     /**
-     * Http constructor.
-     */
-    public function __construct()
-    {
-        $className = get_class($this);
-        $guess = explode('\\', preg_replace('/^'.preg_quote(self::$servicePrefix).'/', '', $className));
-        $this->serviceName = $guess[0];
-        $this->className = implode('\\', array_slice($guess, 1));
-    }
-
-    /**
      * handle the rpc call
      * Author:Robert
      *
@@ -88,13 +84,21 @@ class Client
     public function __call(string $methodName, array $args)
     {
         $config = self::$config[$this->serviceName] ?? [];
+        //这里做了负载算法
+        if (isset($config[0])) {
+            $config = $this->balance($config);
+        }
         if (!$config) {
             throw new Exception('Config for `'.$this->serviceName.'` not found.');
         }
         if (!isset($config['id']) || !isset($config['secret']) || !isset($config['host'])) {
             throw new Exception('Config error');
         }
-        return $this->parse((self::getClient($config))->remoteCall($this->make($this->serviceName, $methodName, $args, $config['id'], $config['secret'], $config['signType'] ?? 'sha1')));
+        $ctx = $this->make($this->serviceName, $methodName, $args, $config['id'], $config['secret'], $config['signType'] ?? 'sha1');
+        if (!$ctx) {
+            throw new Exception('data signature failed');
+        }
+        return $this->parse((self::getClient($config))->remoteCall($ctx));
     }
 
     /**
