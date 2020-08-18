@@ -68,7 +68,7 @@ class File
     {
         SeasLog::setDatetimeFormat('Y-m-d H:i:s');
         SeasLog::setLogger($this->folder);
-        return SeasLog::log($level, $msg);
+        return SeasLog::log($level, '{"createdAt":"'.date('Y-m-d H:i:s').'","entity":'.trim($msg).'}'.PHP_EOL);
     }
 
     /**
