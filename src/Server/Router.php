@@ -99,7 +99,7 @@ class Router
         if ($logPath) {
             $this->logPath = $logPath;
         }
-        $this->writeLog($req);
+        $this->writeLog(trim($req));
         $this->req = @json_decode($req, true);
         if (!$this->req) {
             throw new Exception('Request data error 400');
